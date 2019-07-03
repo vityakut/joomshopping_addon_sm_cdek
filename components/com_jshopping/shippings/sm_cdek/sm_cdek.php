@@ -25,7 +25,6 @@ class sm_cdek extends shippingextRoot
         $packaging = $cdek->get('packaging');
 
         $sm = $this->getSM($shipping_ext->id);
-
         $checkedNo = $checkedYes = '';
         if ($config['debug']) {
             $checkedYes = 'checked="checked"';
@@ -94,7 +93,6 @@ class sm_cdek extends shippingextRoot
 
 
         $metodId = $metods[$shipping_method_price->shipping_method_id];
-
         $weight = 0;
         $quantity = 0;
         foreach ($cart->products as $product) {
@@ -121,6 +119,7 @@ class sm_cdek extends shippingextRoot
 	        if (self::$debug) self::$error[] = 'Способ доставки '.$shipping_method_price->shipping_method_id;
 	        self::$error[] = implode($cdek->get('error'), "\r\n");
             self::$alerts[] = $cdek->get('alerts');
+            $price = -9999;
         }
         $prices['shipping'] = $price;
 
@@ -132,8 +131,8 @@ class sm_cdek extends shippingextRoot
             self::$note[] = 'Индекс места назначения '.$cdek->receiverCityPostCode;
             self::$note[] = 'Стоимость посылки '.$price.' руб.';
             self::$note[] = 'Стоимость посылки в валюте магазина '.$prices['shipping'] ;
+            self::printDebug();
         }
-        self::printDebug();
 
         return $prices;
     }
@@ -186,43 +185,33 @@ class sm_cdek extends shippingextRoot
 
     private static function printDebug()
     {
-        if (self::$debug){
-            echo '<pre>';
-            if (count(self::$note)) {
-                echo '<h4>Информация</h4>';
-                echo '<ul>';
-                foreach (self::$note as $n) {
-                    echo '<li>' . $n . '</li>';
-                }
-                echo '</ul>';
+        echo '<pre>';
+        if (count(self::$note)) {
+            echo '<h4>Информация</h4>';
+            echo '<ul>';
+            foreach (self::$note as $n) {
+                echo '<li>' . $n . '</li>';
             }
-
-            if (count(self::$error)) {
-                echo '<h4>Ошибки</h4>';
-                echo '<ul>';
-                foreach (self::$error as $e) {
-                    echo '<li><span style="color: #ff0000;">' . $e . '</span></li>';
-                }
-                echo '</ul>';
-            }
-            if (count(self::$alerts)){
-                echo '<h4>Сообщения</h4>';
-                echo '<ul>';
-                foreach (self::$alerts as $alert) {
-                    echo '<li><span>' . $alert . '</span></li>';
-                }
-                echo '</ul>';
-            }
-            echo '</pre>';
-        } else{
-            if (count(self::$alerts)){
-                echo '<ul>';
-                foreach (self::$alerts as $alert) {
-                    echo '<li class="alert alert-info"><span>' . $alert . '</span></li>';
-                }
-                echo '</ul>';
-            }
+            echo '</ul>';
         }
+
+        if (count(self::$error)) {
+            echo '<h4>Ошибки</h4>';
+            echo '<ul>';
+            foreach (self::$error as $e) {
+                echo '<li><span style="color: #ff0000;">' . $e . '</span></li>';
+            }
+            echo '</ul>';
+        }
+        if (count(self::$alerts)){
+            echo '<h4>Сообщения</h4>';
+            echo '<ul>';
+            foreach (self::$alerts as $alert) {
+                echo '<li><span>' . $alert . '</span></li>';
+            }
+            echo '</ul>';
+        }
+        echo '</pre>';
         self::$note = self::$error = self::$alerts = array();
     }
 
